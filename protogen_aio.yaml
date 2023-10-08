@@ -1,0 +1,37 @@
+protogen:
+  protoc_version: "22.2"
+
+envs:
+  "shared_proto": "/tmp/shared-proto"
+  "gen_go_dir": "./gen/pb"
+  "go_import_base": "github.com/cs-lexliu/pickup-helper/gen/pb"
+
+generate:
+  service_defaults:
+    includes:
+      - "{{shared_proto}}/"
+    plugins:
+      go:
+        output: "{{gen_go_dir}}"
+        flags:
+          - "paths=source_relative"
+      go-grpc:
+        output: "{{gen_go_dir}}"
+        flags:
+          - "paths=source_relative"
+  services:
+    - name: "DeliveryManager"
+      inputs:
+        - "{{shared_proto}}/DeliveryManager/*.proto"
+    - name: "shopping-checkout"
+      inputs:
+        - "{{shared_proto}}/shopping-checkout/*.proto"
+    - name: "shopping-checkout-core"
+      inputs:
+        - "{{shared_proto}}/shopping-checkout-core/*.proto"
+      go_options:
+        modifiers:
+          shopping-checkout/payment.proto: "{{go_import_base}}/shopping-checkout"
+    - name: "order_manager"
+      inputs:
+        - "{{shared_proto}}/OrderManager/*.proto"
